@@ -20,10 +20,22 @@ jobs:
       - name: "Checkout do código"
         uses: actions/checkout@v4
 
-      # INSIRA AQUI A LÓGICA PARA RODAR OS TESTES E VERIFICAR A COBERTURA
-      ###
-      ###
-      ###
+      - name: Executar testes com cobertura (mínimo 80%)
+        run: |
+          npm ci || npm install
+          npx jest --coverage --coverageReporters=text-summary
+          
+          COVERAGE=$(npx jest --coverage --coverageReporters=text-summary \
+            | grep -oP 'All files.*\s+\K[0-9]+\.[0-9]+' | head -1)
+
+          echo "Cobertura: $COVERAGE%"
+          
+          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
+            echo "Cobertura abaixo de 80%!"
+            exit 1
+          else
+            echo "Cobertura >= 80%!"
+          fi
 
       - name: "Extrair porcentagem de cobertura" # Esse step será validado pelo desafio, não altere o nome. No final, ele deve gerar o output "coverage" com a porcentagem de cobertura.
         id: coverage
