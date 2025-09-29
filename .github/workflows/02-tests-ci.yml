@@ -20,22 +20,16 @@ jobs:
       - name: "Checkout do código"
         uses: actions/checkout@v4
 
-      - name: Executar testes com cobertura (mínimo 80%)
-        run: |
-          npm ci || npm install
-          npx jest --coverage --coverageReporters=text-summary
-          
-          COVERAGE=$(npx jest --coverage --coverageReporters=text-summary \
-            | grep -oP 'All files.*\s+\K[0-9]+\.[0-9]+' | head -1)
+      - name: "Setup Node.js"
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
 
-          echo "Cobertura: $COVERAGE%"
-          
-          if (( $(echo "$COVERAGE < 80" | bc -l) )); then
-            echo "Cobertura abaixo de 80%!"
-            exit 1
-          else
-            echo "Cobertura >= 80%!"
-          fi
+      - name: Executar testes com cobertura (>= 80% em tudo, Node/Windows-friendly)
+        env:
+          COVERAGE_MIN: ${{ env.COVERAGE_MIN || 80 }}
+        run: node coverage-gate.js
 
       - name: "Extrair porcentagem de cobertura" # Esse step será validado pelo desafio, não altere o nome. No final, ele deve gerar o output "coverage" com a porcentagem de cobertura.
         id: coverage
