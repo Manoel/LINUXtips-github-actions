@@ -18,7 +18,7 @@ try { run('npm ci'); } catch { console.warn('npm ci falhou; tentando npm install
 
 // 2) Executa testes gerando summary
 //    Usa seu script "tests" (assim o posttests também roda e mantém compatível com o desafio)
-run('npm run tests -- --coverageReporters=json-summary --coverageReporters=text-summary --coverageReporters=lcov');
+run('npm run tests -- --coverageReporters=json --coverageReporters=json-summary --coverageReporters=text-summary --coverageReporters=lcov');
 
 // 3) Lê coverage-summary.json
 const summaryPath = path.join('coverage', 'coverage-summary.json');
